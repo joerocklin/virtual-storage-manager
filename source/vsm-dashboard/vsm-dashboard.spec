@@ -131,7 +131,6 @@ sed -i "s,%VSM_VERSION%,$VSM_VERSION,g" %{_datadir}/vsm-dashboard/vsm_dashboard/
 %dir %{_sysconfdir}/httpd/conf.d
 %config(noreplace) %attr(-, root, apache) %{_sysconfdir}/httpd/conf.d/vsm-dashboard.conf
 
-%dir %{_bindir}
 %config(noreplace) %attr(-, root, apache) %{_bindir}/lessc
 
 %dir %attr(0755, apache, apache) %{_libdir}/less

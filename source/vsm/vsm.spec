@@ -261,7 +261,6 @@ exit 0
 %config(noreplace) %attr(-, root, vsm) %{_initrddir}/vsm-conductor
 %config(noreplace) %attr(-, root, vsm) %{_initrddir}/vsm-scheduler
 
-%dir %{_bindir}
 %config(noreplace) %attr(-, root, vsm) %{_bindir}/vsm-rootwrap
 %config(noreplace) %attr(-, root, vsm) %{_bindir}/vsm-physical
 %config(noreplace) %attr(-, root, vsm) %{_bindir}/vsm-agent
