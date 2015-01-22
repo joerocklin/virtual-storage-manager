@@ -15,14 +15,16 @@ BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 BuildRequires:  MySQL-python
 BuildRequires:  python-django-compressor
-BuildRequires:  Django14
+%{?el6:BuildRequires:  Django14}
+%{?el7:BuildRequires:  python-django}
 BuildRequires:  python-django-openstack-auth
 BuildRequires:  python-netaddr
 BuildRequires:  python-keystoneclient
 BuildRequires:  pytz
 BuildRequires:  python-lockfile
 
-Requires:    Django14
+%{?el6:Requires:  Django14}
+%{?el7:Requires:  python-django}
 Requires:    apr
 Requires:    apr-util
 Requires:    apr-util-ldap

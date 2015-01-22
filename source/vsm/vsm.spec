@@ -12,12 +12,21 @@ Source0:          vsm-%{version}.tar.gz
 
 BuildArch:        noarch
 BuildRequires:    MySQL-python
+%if 0%{?el6}
 BuildRequires:    python-importlib
+BuildRequires:    python-sqlalchemy0.7
+BuildRequires:    python-routes1.12
+BuildRequires:    python-paste-deploy1.5
+%endif
+%if 0%{?el7}
+BuildRequires:    python-sqlalchemy
+BuildRequires:    python-routes
+BuildRequires:    python-paste-deploy
+%endif
 BuildRequires:    python-ordereddict
 BuildRequires:    python-pbr
 BuildRequires:    python-decorator
 BuildRequires:    python-tempita
-BuildRequires:    python-sqlalchemy0.7
 BuildRequires:    python-amqplib
 BuildRequires:    python-anyjson
 BuildRequires:    python-argparse
@@ -25,10 +34,8 @@ BuildRequires:    python-eventlet
 BuildRequires:    python-kombu
 BuildRequires:    python-lockfile
 BuildRequires:    python-lxml
-BuildRequires:    python-routes1.12
 BuildRequires:    python-webob
 BuildRequires:    python-greenlet
-BuildRequires:    python-paste-deploy1.5
 BuildRequires:    python-paste
 BuildRequires:    python-migrate
 BuildRequires:    python-stevedore
@@ -42,12 +49,21 @@ BuildRequires:    numpy
 BuildRequires:    python-psutil
 
 Requires:    MySQL-python
+%if 0%{?el6}
 Requires:    python-importlib
+Requires:    python-sqlalchemy0.7
+Requires:    python-routes1.12
+Requires:    python-paste-deploy1.5
+%endif
+%if 0%{?el7}
+Requires:    python-sqlalchemy
+Requires:    python-routes
+Requires:    python-paste-deploy
+%endif
 Requires:    python-ordereddict
 Requires:    python-pbr
 Requires:    python-decorator
 Requires:    python-tempita
-Requires:    python-sqlalchemy0.7
 Requires:    python-amqplib
 Requires:    python-anyjson
 Requires:    python-argparse
@@ -55,10 +71,8 @@ Requires:    python-eventlet
 Requires:    python-kombu
 Requires:    python-lockfile
 Requires:    python-lxml
-Requires:    python-routes1.12
 Requires:    python-webob
 Requires:    python-greenlet
-Requires:    python-paste-deploy1.5
 Requires:    python-paste
 Requires:    python-migrate
 Requires:    python-stevedore
@@ -87,7 +101,12 @@ Requires:         %{name} = %{version}-%{release}
 BuildRequires:    graphviz
 BuildRequires:    python-eventlet
 BuildRequires:    python-routes
+%if 0%{?el6}
 BuildRequires:    python-sqlalchemy0.7
+%endif
+%if 0%{?el7}
+BuildRequires:    python-sqlalchemy
+%endif
 BuildRequires:    python-webob
 BuildRequires:    python-migrate
 BuildRequires:    python-iso8601
