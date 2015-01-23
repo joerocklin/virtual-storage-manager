@@ -237,7 +237,6 @@ exit 0
 %doc LICENSE doc
 %{python_sitelib}/*
 
-%dir %{_sysconfdir}/logrotate.d
 %config(noreplace) %attr(-, root, vsm) %{_sysconfdir}/logrotate.d/vsmceph
 
 %dir %{_sysconfdir}/vsm
@@ -251,10 +250,8 @@ exit 0
 %dir %{_sysconfdir}/vsm/rootwrap.d
 %config(noreplace) %attr(-, root, vsm) %{_sysconfdir}/vsm/rootwrap.d/vsm.filters
 
-%dir %{_sysconfdir}/sudoers.d
 %config(noreplace) %attr(-, root, vsm) %{_sysconfdir}/sudoers.d/vsm
 
-%dir %{_initrddir}
 %config(noreplace) %attr(-, root, vsm) %{_initrddir}/vsm-physical
 %config(noreplace) %attr(-, root, vsm) %{_initrddir}/vsm-agent
 %config(noreplace) %attr(-, root, vsm) %{_initrddir}/vsm-api
@@ -277,7 +274,6 @@ exit 0
 %config(noreplace) %attr(-, root, vsm) %{_bindir}/agent-token
 %config(noreplace) %attr(-, root, vsm) %{_bindir}/vsm-backup
 %config(noreplace) %attr(-, root, vsm) %{_bindir}/vsm-restore
-
 
 %config(noreplace) %attr(-, root, vsm) %{_usr}/local/bin/getip
 %config(noreplace) %attr(-, root, vsm) %{_usr}/local/bin/cluster_manifest
