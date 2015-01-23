@@ -80,7 +80,7 @@ class GetIp(object):
             return ip
         else:
             print("There is no ip that matches management address")
-            raise
+            raise Exception("There is no ip that matches management address")
 
 class ParseManifest(object):
     """Parse cluster address in cluster.manifest"""
