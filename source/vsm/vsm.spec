@@ -250,7 +250,7 @@ exit 0
 %dir %{_sysconfdir}/vsm/rootwrap.d
 %config(noreplace) %attr(-, root, vsm) %{_sysconfdir}/vsm/rootwrap.d/vsm.filters
 
-%config(noreplace) %attr(-, root, vsm) %{_sysconfdir}/sudoers.d/vsm
+%config(noreplace) %attr(-, root, root) %{_sysconfdir}/sudoers.d/vsm
 
 %config(noreplace) %attr(-, root, vsm) %{_initrddir}/vsm-physical
 %config(noreplace) %attr(-, root, vsm) %{_initrddir}/vsm-agent
