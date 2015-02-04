@@ -2,9 +2,9 @@
   Virtual Storage Manager for Ceph
 ==========================================================
 
-**Version:** 0.9.1
+**Version:** 1.0
 
-**Source:** 2014-12
+**Source:** 2015-01
 
 **Keywords:** Ceph, Virtual Storage Management
 
@@ -12,7 +12,7 @@ Preparation
 ===================================
 Before you get ready to install VSM, you should prepare your environment. The sections here are very helpful for understanding the deployment concepts.
 
-**Note**For a Ceph cluster created and managed by VSM you need to prepare at least three storage nodes plus a VSM controller node. VSM requires a minimum of three Ceph storage nodes before it will create a Ceph cluster. 
+**Note**For a Ceph cluster created and managed by VSM you need to prepare at least three storage nodes plus a VSM controller node. VSM requires a minimum of three Ceph storage nodes before it will create a Ceph cluster.
 
 #Roles
 There are two roles for the VSM cluster.
@@ -26,7 +26,7 @@ There are three kinds of networks defined in VSM.
 ## Management Network
 Management Network is used to manage the whole VSM cluster. Every node in the VSM cluster should have this.
 ## Ceph Public Network
-Ceph Public Network is used by Ceph to manage Ceph client to server IO operations. 
+Ceph Public Network is used by Ceph to manage Ceph client to server IO operations.
 ## Ceph Cluster Network
 Ceph Cluster Network is used by Ceph to transfer data between OSDs for replication and rebalancing.
 
@@ -72,7 +72,7 @@ The configuration for VSM in the `cluster.manifest` file should be:
 
 **Note** Here we do not use the public network for accessing the internet in our VSM cluster.
 
-**cluster.manifest** Do not worry about this file right now. It is discussed later, in the storage node setup. 
+**cluster.manifest** Do not worry about this file right now. It is discussed later, in the storage node setup.
 
 ### Sample 2
 But how about when all the nodes just have two NICs. Such as a controller node and storage node having:
@@ -100,7 +100,7 @@ The configuration for VSM in `cluster.manifest` file should be:
 ### Sammple 3
 It's quite common to have just one NIC for demo environments. Thenall nodes just have:
 
-    - 192.168.124.0/24 
+    - 192.168.124.0/24
 
 We may assign this network as below:
 
@@ -128,8 +128,8 @@ After install of a clean CentOS 6.5 Basic Server option system, do not run:
 
 Otherwise you may get conflicts between yum packages when you install VSM.
 
-#Build RPMs from Source, or use Prebuilt RPMs
-After you download the source code or prebuilt RPMs from the VSM github, you will need to do the following steps. 
+#Build RPMs
+After you download the source code from the VSM github, the first step is to build the VSM RPMs. If you already have VSM RPMs, you can jump to [VSM RPM Install](#RPM_Install).
 
 ## Setup Yum Repo
 ###Step 1
@@ -274,9 +274,7 @@ Then rum:
     yum makecache
 
 ##<a name="RPM_Install"></a> VSM RPM Build
-After you setup the repo, and make sure it works, you can build the RPMs from source code, or use the prebuilt VSM RPMs
-###Step 3
-Build the VSM RPMs from source. If you downloaded and want to use the prebuilt VSM RPMs, then skip this buildrpm step and go to the VSM RPM Install step. 
+After you setup the repo, and make sure it works, you can build the RPMs from source code.
 
     cd $source_code_path
     ./buildrpm
@@ -285,12 +283,16 @@ After building, all the rpms are located in $source_code_path/vsmrepo directory.
 
 ## VSM RPM Install
 
-Go to the directory that you placed your VSM RPMs in, or the /vsmrepo directory if you just built them from source. 
+Go to the directory that you placed your VSM RPMs in, or the /vsmrepo directory if you just built them from source.
 
 You can use `yum localinstall` to install vsm packages by:
 
     cd vsmrepo
-    yum localinstall python-vsmclient-2014.12-0.9.1.el6.noarch.rpm \        vsm-dashboard-2014.12-0.9.1.el6.noarch.rpm \     	 vsm-2014.12-0.9.1.el6.noarch.rpm \        vsm-deploy-2014.12-0.9.1.el6.x86_64.rpm
+
+    yum localinstall python-vsmclient-2014.11-0.8.0.el6.noarch.rpm \
+    		vsm-dashboard-2014.11-0.8.0.el6.noarch.rpm \
+   		 vsm-2014.11-0.8.0.el6.noarch.rpm \
+    		vsm-deploy-2014.11-0.8.0.el6.x86_64.rpm
 
 **Note**: vsm-dashboard will use the httpd service to setup the Web UI. Sometimes it conflicts with the OpenStack dashboard, so try to install the OpenStack dashboard and the VSM dashboard onto different nodes.
 
@@ -317,16 +319,17 @@ For every node, regardless of if it’s a controller node or a storage node, do 
 
     - Firstly, assume you've built & installed the VSM RPM packages as mentioned before.
     - After that, install the required services for VSM.
-    
+
         preinstall
 
-There is an incompatibility issue with python-django-horizon module, whereby the module should be downgraded to the lower version 2013.1.1-1. Please complete the following steps. 
 
-*   Remove installed vsm-dashboard and python-django-horizon packages
-  *   # rpm –e vsm-dashboard-2014.12-0.9.1.el6.noarch
-  *   # rpm –e python-django-horizon-2014.1.3-1.el6.noarch
+There is an incompatibility issue with python-django-horizon module, whereby the module should be downgraded to the lower version 2013.1.1-1.
 
-*   Download these rpm packages from [vsm-dependencies github repository](https://github.com/01org/vsm-dependencies/tree/master/repo ), below packages are required to be downloaded from this web site:
+### For a brand new install:
+*   Remove the installed python-django-horizon package
+  *   # rpm –e python-django-horizon
+
+*   Download these rpm packages from [vsm-dependencies github repository](https://github.com/01org/vsm-dependencies/tree/master/repo ), the packages below are required to be downloaded from this web site:
   *   Python-django-horizon, python-quantumclient, python-swiftclient, python-cinderclient, python-glanceclient, python-nova client
 
 *   Reinstall python-django-horizon package (in this order)
@@ -338,6 +341,25 @@ There is an incompatibility issue with python-django-horizon module, whereby the
   *   # rpm –ivh python-django-horizon-2013.1.1-1.el6.noarch.rpm
 *   Reinstall vsm-dashboard, this is exactly the same one from v0.9.1 release package
   *   # rpm –ivh vsm-dashboard-2014.12-0.9.1.el6.noarch.rpm
+
+
+### For existing broken install (where you previously installed and ran vsm-controller and it failed)
+*   Remove installed vsm-dashboard and python-django-horizon packages
+  *   # rpm –e vsm-dashboard
+  *   # rpm –e python-django-horizon
+
+*   Download these rpm packages from [vsm-dependencies github repository](https://github.com/01org/vsm-dependencies/tree/master/repo ), below packages are required to be downloaded from this web site:
+  *   Python-django-horizon, python-quantumclient, python-swiftclient, python-cinderclient, python-glanceclient, python-nova client
+
+*   Reinstall python-django-horizon package (in this order)
+  *   # rpm –ivh python-quantumclient-2.2.1-2.el6.noarch.rpm
+  *   # rpm -ivh python-swiftclient-1.4.0-1.el6.noarch.rpm
+  *   # rpm –ivh python-cinderclient-1.0.4-1.el6.noarch.rpm
+  *   # rpm –ivh python-glanceclient-0.9.0-2.el6.noarch.rpm
+  *   # rpm –ivh python-novaclient-2.13.0-1.el6.noarch.rpm
+  *   # rpm –ivh python-django-horizon-2013.1.1-1.el6.noarch.rpm
+*   Reinstall vsm-dashboard, this is exactly the same one from v0.8 release package
+  *   # rpm –ivh vsm-dashboard-2014.11-0.8.0.el6.noarch.rpm
 
 *   Reboot the vsm controller node
 
@@ -364,7 +386,7 @@ There is an incompatibility issue with python-django-horizon module, whereby the
     22 ssh
     80 http
     443 https for future use
-    6789 Ceph Monitor 
+    6789 Ceph Monitor
     6800:8100 Ceph
     123 ntp
     8778  vsm
@@ -519,12 +541,12 @@ The storage you use for your Ceph cluster must have previously been provisioned 
 	parted /dev/sdb -- mklabel gpt
 	parted -a optimal /dev/sdb -- mkpart xfs 1MB 100%
 
-Enter your primary and associated journal storage information in the `/etc/manifest/server.manifest` file. 
+Enter your primary and associated journal storage information in the `/etc/manifest/server.manifest` file.
 
 For example, change the lines below:
 
     [10krpm_sas]
-    #format [sas_device]  [journal_device] 
+    #format [sas_device]  [journal_device]
     %osd-by-path-1%   %journal-by-path-1%
     %osd-by-path-2%   %journal-by-path-2%
     %osd-by-path-3%   %journal-by-path-3%
@@ -532,7 +554,7 @@ For example, change the lines below:
 to be:
 
     [10krpm_sas]
-    #format [sas_device]  [journal_device] 
+    #format [sas_device]  [journal_device]
     /dev/sdb /dev/sdc1
     /dev/sdd /dev/sdc2
     /dev/sde /dev/sdf
