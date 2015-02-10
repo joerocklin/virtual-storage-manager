@@ -56,6 +56,7 @@ class ManifestChecker(object):
         self._info = self._smp.format_to_json(check_manifest_tag=True)
         self._lines = open(file_path).readlines()
         self._server_host = self._info['vsm_controller_ip']
+        self._need_journal = True
         print self._info
         try:
             self._sender = WSGIClient(self._server_host,
@@ -65,6 +66,10 @@ class ManifestChecker(object):
 
             hosts_content = self._rec_data['etc_hosts']
             self._storage_class_list = self._rec_data['storage_class']
+            self._file_system = self._rec_data['cluster']['file_system']
+            if self._file_system.lower() == 'btrfs':
+                self._need_journal = False
+
             _write_etc_hosts(hosts_content)
             print json.dumps(self._rec_data, sort_keys=True, indent=2)
         except:
@@ -73,7 +78,8 @@ class ManifestChecker(object):
                          'Maybe your auth_keys is error!',
                          'check auth_key in server.manifest',
                          'with /etc/vsmdeploy/deployrc AGENT_PASSWORD variable',
-                         'Check if you can ping this host']
+                         'Check if you can ping this host',
+                         sys.exc_info()[0]]
             error(info_list)
 
         self._secs_list = self._storage_class_list + ['vsm_controller_ip', 'role', 'auth_key', 'zone']
@@ -101,30 +107,37 @@ class ManifestChecker(object):
             ls = self.__lines_after_section(sec)
             print 'sec %s has lines: %s' % (sec, ls)
             for line in ls:
-                # must have osd and journal
-                if len(line.split()) != 2:
-                    print line.split()
-                    error('Device = %s defined error!' % line)
+                if self._need_journal:
+                    # must have osd and journal
+                    if len(line.split()) != 2:
+                        print line.split()
+                        error('Device = %s defined error!' % line)
 
-                osd_list.append(line.split()[0])
-                js_list.append(line.split()[1])
+                    osd_list.append(line.split()[0])
+                    js_list.append(line.split()[1])
+                else:
+                    osd_list.append(line)
 
         osd_num = len(osd_list)
         js_num = len(js_list)
 
-        if (osd_num + js_num) != len(list(set(osd_list+js_list))):
-            error('There are duplicated osd/journal')
-
+        # Sanity check the list of OSDs
         if osd_num != len(list(set(osd_list))):
             print osd_list
             error('There are duplicated disks for OSD')
 
-        if js_num != len(list(set(js_list))):
-            print js_list
-            error('There are duplicated disks for Journal!')
+        # If the file system used needs journal disks, do some extra sanity
+        # checks to make sure there aren't duplicates
+        if self._need_journal:
+            if (osd_num + js_num) != len(list(set(osd_list+js_list))):
+                error('There are duplicated osd/journal')
 
-        if len(osd_list) != len(js_list):
-            error('The OSD devices is not equal to journal devices!')
+            if js_num != len(list(set(js_list))):
+                print js_list
+                error('There are duplicated disks for Journal!')
+
+            if len(osd_list) != len(js_list):
+                error('The OSD devices is not equal to journal devices!')
 
         if len(osd_list) == 0:
             role = self._info['role']
@@ -136,7 +149,8 @@ class ManifestChecker(object):
                        there is node disks for ceph!' % role)
 
         self.__check_osd_devices(osd_list)
-        self.__check_journal_devices(js_list)
+        if self._need_journal:
+            self.__check_journal_devices(js_list)
 
     def __mount_devices(self):
         out = utils.execute('mount')
