@@ -446,8 +446,8 @@ class AgentsController(wsgi.Controller):
 
         if req.environ['vsm.context']:
             LOG.info('context is not None')
-        self._cluster_info['etc_hosts'] = \
-             utils.read_file_as_root(FLAGS.etc_hosts)
+        with open(FLAGS.etc_hosts, 'r') as etc_hosts:
+            self._cluster_info['etc_hosts'] = etc_hosts
         storage_group , storage_class = self._get_storage_group_and_class_list()
         self._cluster_info['storage_class'] = storage_class
         self._cluster_info['storage_group'] = storage_group
